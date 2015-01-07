@@ -36,7 +36,14 @@ public class Client {
         while ((userInput = stdIn.readLine()) != null)
         {
             out.println(userInput);
-            System.out.println("echo: " + in.readLine());
+            if(userInput.equals("."))
+            {
+                break;
+            }
+            else
+            {
+                System.out.println("echo: " + in.readLine());
+            }
         }
     }
 }

@@ -25,21 +25,20 @@ public class Main {
         {
             String hostname = args[1];
             int port = Integer.parseInt(args[2]);
-            if (args[0].equals("Server"))
-            {
-                Server s = new Server (hostname, port);
-            }
-            else if (args[0].equals("Client"))
-            {
-                Client c = new Client (hostname, port);
-                c.Run();
-            }
-            else
-            {
-                System.out.println("Unknown first argument." + message);
+            switch (args[0]) {
+                case "Server":
+                    Server s = new Server (hostname, port);
+                    s.Run();
+                    break;
+                case "Client":
+                    Client c = new Client (hostname, port);
+                    c.Run();
+                    break;
+                default:
+                    System.out.println("Unknown first argument." + message);
+                    break;
             }
         }
-        System.out.println("Hello World!");
     }
     
 }
