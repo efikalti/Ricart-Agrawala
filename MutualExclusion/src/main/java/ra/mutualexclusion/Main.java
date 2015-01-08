@@ -27,8 +27,8 @@ public class Main {
             int port = Integer.parseInt(args[2]);
             switch (args[0]) {
                 case "Server":
-                    Server s = new Server (hostname, port);
-                    s.Run();
+                    MainServer s = new MainServer (port);
+                    s.run();
                     break;
                 case "Client":
                     Client c = new Client (hostname, port);

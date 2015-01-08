@@ -17,10 +17,10 @@ import java.net.Socket;
  */
 public class Client {
     
-    private final Socket client;
-    private final PrintWriter out;
-    private final BufferedReader in;
-    BufferedReader stdIn;
+    private final Socket            client;
+    private final PrintWriter       out;
+    private final BufferedReader    in;
+    private final BufferedReader    stdIn;
     
     public Client (String hostname, int port) throws IOException
     {
@@ -44,6 +44,10 @@ public class Client {
             {
                 System.out.println("echo: " + in.readLine());
             }
+        }
+        if (client != null)
+        {
+            client.close();
         }
     }
 }
