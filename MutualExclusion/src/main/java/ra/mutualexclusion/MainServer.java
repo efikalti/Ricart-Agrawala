@@ -8,6 +8,8 @@ package ra.mutualexclusion;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  *
@@ -18,6 +20,7 @@ public class MainServer implements Runnable{
     private ServerSocket        server        = null;
     private Thread              currentThread = null;
     private boolean             isStopped     = false;
+    private ExecutorService     threadPool    = Executors.newFixedThreadPool(3);
     
     public MainServer(int port)
     {
@@ -36,8 +39,7 @@ public class MainServer implements Runnable{
             Socket clientSocket = null;
             try {
                 clientSocket = server.accept();
-                ServerWorker s = new ServerWorker(clientSocket);
-                new Thread( new ServerWorker(clientSocket)).start();
+                this.threadPool.execute(new ServerWorker(clientSocket));
             }
             catch (IOException ex) 
             {
@@ -53,6 +55,7 @@ public class MainServer implements Runnable{
     public void stop(){
         this.isStopped = true;
         try {
+            this.threadPool.shutdown();
             this.server.close();
         } catch (IOException e) {
             throw new RuntimeException("Error closing server", e);
