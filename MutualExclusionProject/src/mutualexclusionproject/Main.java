@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package ra.mutualexclusion;
+package mutualexclusionproject;
 
 import java.io.IOException;
 
@@ -16,7 +16,6 @@ public class Main {
     public static void main(String []args) throws IOException
     {
         String message = "Correct usage of the program: java -jar MutualExclusion-1.0.jar <Server/Client> <hostname> <port>";
-        
         if (args.length < 3)
         {
             System.out.println("Wrong input." + message);
