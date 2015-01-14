@@ -21,7 +21,6 @@ public final class ServerWorker implements Runnable{
         this.clientSocket = c;
         out = new PrintWriter(clientSocket.getOutputStream(), true);
         in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-            
     }
 
     @Override
@@ -30,15 +29,16 @@ public final class ServerWorker implements Runnable{
             String inputLine;
             while ((inputLine = in.readLine()) != null) 
             {
-                if (inputLine.equals("."))
+                if (inputLine.equals("quit"))
                 {
                     break;
                 }
                 else
                 {
-                    out.println(inputLine);
+                    
                 }
             }
+            
         }
         catch (IOException ex) {
             ex.printStackTrace();
