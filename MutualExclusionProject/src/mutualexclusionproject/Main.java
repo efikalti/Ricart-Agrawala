@@ -18,22 +18,23 @@ public class Main {
     
     public static void main(String []args) throws IOException
     {
-        String message = "Correct usage of the program: java -jar MutualExclusion-1.0.jar <Server/Client> <hostname for Client> <port>";
+        String message = "Correct usage of the program: java -jar MutualExclusion-1.0.jar <Server/Client> <name for Client> <hostname for Client> <port for Client>";
         if (args.length < 3)
         {
             System.out.println("Wrong input." + message);
         }
         else
         {
-            String hostname = args[1];
-            int port = Integer.parseInt(args[2]);
+            String name = args[1];
+            String hostname = args[2];
+            int port = Integer.parseInt(args[3]);
             switch (args[0]) {
                 case "MainServer":
                     MainServer s = new MainServer (mainPort);
                     s.run();
                     break;
                 case "Client":
-                    Client c = new Client (hostname, port, mainServer, mainPort);
+                    Client c = new Client (name, hostname, port, mainServer, mainPort);
                     c.Run();
                     break;
                 default:

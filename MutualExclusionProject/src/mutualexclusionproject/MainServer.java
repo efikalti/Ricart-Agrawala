@@ -42,7 +42,7 @@ public class MainServer implements Runnable{
             Socket clientSocket = null;
             try {
                 clientSocket = server.accept();
-                this.threadPool.execute(new ServerWorker(clientSocket));
+                this.threadPool.execute(new ServerWorker(clientSocket, this.HostTable));
             }
             catch (IOException ex) 
             {

@@ -22,14 +22,16 @@ public class Client {
     private final PrintWriter       out;
     private final BufferedReader    in;
     private final BufferedReader    stdIn;
+    private final String            name;
+    private final String            hostname;
+    private final int               port;
     private final String            mainServer;
     private final int               mainPort;
     private ArrayList<Entry>        processes = null;
-    private final String            hostname;
-    private final int               port;
     
-    public Client (String hostname, int port, String mainServer, int mainPort) throws IOException
+    public Client(String name, String hostname, int port, String mainServer, int mainPort) throws IOException
     {
+        this.name = name;
         this.mainServer = mainServer;
         this.mainPort = mainPort;
         this.hostname = hostname;
@@ -62,6 +64,11 @@ public class Client {
         }
     }
     
+    /**
+     * Connect to the main server and request the name table with all the other processes.
+     * If it is the first time you connect to the main server, register to the name table.
+     * @throws IOException 
+     */
     private void getOtherProcesses() throws IOException
     {
         Socket connect = new Socket(mainServer, mainPort);
