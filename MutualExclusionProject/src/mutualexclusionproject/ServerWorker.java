@@ -39,6 +39,7 @@ public final class ServerWorker implements Runnable{
                     case "register":
                         if ((inputLine = in.readLine()) != null)
                         {
+                            print(inputLine);
                             String parts[] = inputLine.split(",");
                             if (parts.length == 3)
                             {
@@ -50,12 +51,13 @@ public final class ServerWorker implements Runnable{
                             {
                                 out.println("nok");
                             }
-                            break;
                         }
                         else
                         {
                             out.println("nok");
-                        }   break;
+                        }
+                        out.flush();
+                        break;
                 }
             }
             
@@ -68,5 +70,10 @@ public final class ServerWorker implements Runnable{
     private synchronized void register (String name, String hostname, int port)
     {
         this.HostTable.add(new Entry(name, hostname, port));
+    }
+    
+    public void print(String str)
+    {
+        System.out.println("Client says: " + str);
     }
 }

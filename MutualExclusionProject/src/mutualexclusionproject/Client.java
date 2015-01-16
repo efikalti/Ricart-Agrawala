@@ -9,6 +9,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 
@@ -18,9 +19,9 @@ import java.util.ArrayList;
  */
 public class Client {
     
-    private final Socket            server;
-    private final PrintWriter       out;
-    private final BufferedReader    in;
+    private final ServerSocket      server;
+    private  PrintWriter       out;
+    private  BufferedReader    in;
     private final BufferedReader    stdIn;
     private final String            name;
     private final String            hostname;
@@ -37,14 +38,16 @@ public class Client {
         this.hostname = hostname;
         this.port = port;
         
-        server = new Socket(hostname, port);
-        out = new PrintWriter(server.getOutputStream(), true);
-        in = new BufferedReader( new InputStreamReader(server.getInputStream()));
+        server = new ServerSocket(port);
+        //out = new PrintWriter(server.getOutputStream(), true);
+        //in = new BufferedReader( new InputStreamReader(server.getInputStream()));
         stdIn = new BufferedReader( new InputStreamReader(System.in));
+        this.getOtherProcesses();
     }
     
     public void Run() throws IOException
     {
+        System.out.println("Client running...");
         String userInput;
         while ((userInput = stdIn.readLine()) != null)
         {
@@ -75,23 +78,23 @@ public class Client {
         {
             ArrayList<String> rawInput = new ArrayList<>();
             String str;
+            PrintWriter output = new PrintWriter(connect.getOutputStream(), true);
             BufferedReader input = new BufferedReader( new InputStreamReader(connect.getInputStream()));
             if (processes == null)
             {
-                PrintWriter output = new PrintWriter(connect.getOutputStream(), true);
-                output.println("register");
-                output.println(this.hostname + "," + this.port);
+                do 
+                {
+                    output.println("register");
+                    output.flush();
+                    output.println(this.name + "," + this.hostname + "," + this.port);
+                    output.flush();
+                    str = input.readLine();
+                    print(str);
+                }while(str.equals("nok"));
             }
             while ((str = input.readLine()) != null)
             {
-                if(str.equals("quit"))
-                {
-                    break;
-                }
-                else
-                {
-                    rawInput.add(str);
-                }
+                output.println("quit");
             }
             processes = new ArrayList<>();
             for (String s : rawInput)
@@ -100,5 +103,10 @@ public class Client {
                 processes.add(new Entry(parts[0], parts[1], Integer.parseInt(parts[2])));
             }
         }
+    }
+    
+    public void print(String str)
+    {
+        System.out.println("Main Server says: " + str);
     }
 }

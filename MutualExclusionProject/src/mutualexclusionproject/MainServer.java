@@ -36,6 +36,7 @@ public class MainServer implements Runnable{
 
     @Override
     public void run() {
+        System.out.println("Main Server running...");
         this.currentThread = Thread.currentThread();
         while(!isStopped)
         {

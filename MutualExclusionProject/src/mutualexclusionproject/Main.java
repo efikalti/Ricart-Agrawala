@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package mutualexclusionproject;
 
 import java.io.IOException;
@@ -18,22 +13,22 @@ public class Main {
     
     public static void main(String []args) throws IOException
     {
-        String message = "Correct usage of the program: java -jar MutualExclusion-1.0.jar <Server/Client> <name for Client> <hostname for Client> <port for Client>";
-        if (args.length < 3)
+        String message = "Wrong input.Correct usage of the program: java -jar MutualExclusion-1.0.jar <Server/Client> <name for Client> <hostname for Client> <port for Client>";
+        if ((args.length < 1 && args[0].equals("Server")) || (args.length < 3 && args[0].equals("Client")))
         {
-            System.out.println("Wrong input." + message);
+            System.out.println(message);
         }
         else
         {
-            String name = args[1];
-            String hostname = args[2];
-            int port = Integer.parseInt(args[3]);
             switch (args[0]) {
-                case "MainServer":
+                case "Server":
                     MainServer s = new MainServer (mainPort);
                     s.run();
                     break;
                 case "Client":
+                    String name = args[1];
+                    String hostname = args[2];
+                    int port = Integer.parseInt(args[3]);
                     Client c = new Client (name, hostname, port, mainServer, mainPort);
                     c.Run();
                     break;
