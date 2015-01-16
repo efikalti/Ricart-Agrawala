@@ -66,11 +66,6 @@ public class MainServer implements Runnable{
         }
     }
     
-    private void insert(String name, String host, int port)
-    {
-        this.HostTable.add(new Entry(name, host, port));
-    }
-    
     protected synchronized ArrayList<Entry> getProcesses ()
     {
         return this.HostTable;

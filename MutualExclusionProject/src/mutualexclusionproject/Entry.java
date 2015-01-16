@@ -33,5 +33,10 @@ public class Entry {
         return port;
     }
     
+    @Override
+    public String toString()
+    {
+        return this.name + "," + this.host + "," + this.port;
+    }
     
 }

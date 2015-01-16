@@ -37,14 +37,13 @@ public final class ServerWorker implements Runnable{
                     case "quit":
                         break OUTER;
                     case "register":
-                        if ((inputLine = in.readLine()) != null)
+                        if (!(inputLine = in.readLine()).equals("ok"))
                         {
                             print(inputLine);
                             String parts[] = inputLine.split(",");
                             if (parts.length == 3)
                             {
                                 this.register(parts[0], parts[1], Integer.parseInt(parts[2]));
-                                this.HostTable.add(new Entry(parts[0],parts[1],Integer.parseInt(parts[2])));
                                 out.println("ok");
                             }
                             else
@@ -58,7 +57,20 @@ public final class ServerWorker implements Runnable{
                         }
                         out.flush();
                         break;
+                    case "send HostTable":
+                        System.out.println(this.HostTable.size());
+                        for (Entry t : this.HostTable)
+                        {
+                            out.println(t.toString());
+                            out.flush();
+                        }
+                        out.println("ok");
+                        break;
                 }
+            }
+            for (Entry t : this.HostTable)
+            {
+                System.out.println(t.toString());
             }
             
         }
