@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package mutualexclusionproject;
 
 import java.io.IOException;
@@ -16,15 +11,28 @@ import java.util.concurrent.Executors;
  *
  * @author efi
  */
-public class MainServer implements Runnable{
+public class MainServer {
     
     private ServerSocket        server        = null;
-    private Thread              currentThread = null;
     private boolean             isStopped     = false;
-    private ExecutorService     threadPool    = Executors.newFixedThreadPool(3);
-    public  ArrayList<Entry>    HostTable     = null;
+    private ExecutorService     threadPool    = null;
+    private ArrayList<Entry>    HostTable     = null;
+    private int                 number        = 0;
     
-    public MainServer(int port)
+    private MainServer() {
+        this.threadPool = Executors.newFixedThreadPool(3);
+    }
+    
+    public static MainServer getInstance() {
+        return MainServerHolder.INSTANCE;
+    }
+    
+    private static class MainServerHolder {
+
+        private static final MainServer INSTANCE = new MainServer();
+    }
+    
+    public void Initialize(int port)
     {
         try {
             this.server = new ServerSocket(port);
@@ -32,18 +40,17 @@ public class MainServer implements Runnable{
         } catch (IOException e) {
             throw new RuntimeException("Cannot open port "+ port, e);
         }
+        this.run();
     }
-
-    @Override
+    
     public void run() {
         System.out.println("Main Server running...");
-        this.currentThread = Thread.currentThread();
         while(!isStopped)
         {
             Socket clientSocket = null;
             try {
                 clientSocket = server.accept();
-                this.threadPool.execute(new ServerWorker(clientSocket, this.HostTable));
+                this.threadPool.execute(new ServerWorker(clientSocket));
             }
             catch (IOException ex) 
             {
@@ -66,9 +73,18 @@ public class MainServer implements Runnable{
         }
     }
     
-    protected synchronized ArrayList<Entry> getProcesses ()
+    public synchronized ArrayList<Entry> getProcesses ()
     {
         return this.HostTable;
     }
     
+    public synchronized int getNumber()
+    {
+        return ++this.number;
+    }
+    
+    public synchronized void register (Entry e)
+    {
+        this.HostTable.add(e);
+    }
 }

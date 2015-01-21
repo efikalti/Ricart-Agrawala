@@ -19,19 +19,20 @@ import java.util.ArrayList;
  */
 public class Client {
 
-    private final ServerSocket server;
-    private PrintWriter out;
-    private BufferedReader in;
-    private final BufferedReader stdIn;
-    private final String name;
-    private final String hostname;
-    private final int port;
-    private final String mainServer;
-    private final int mainPort;
-    private ArrayList<Entry> processes = null;
+    private final               ServerSocket server;
+    private                     Socket client;
+    private                     PrintWriter out;
+    private                     BufferedReader in;
+    private final               BufferedReader stdIn;
+    private final               String name;
+    private final               String hostname;
+    private final int           port;
+    private final String        mainServer;
+    private final int           mainPort;
+    private int                 number;
+    private ArrayList<Entry>    processes = null;
 
-    public
-            Client(String name, String hostname, int port, String mainServer, int mainPort) throws IOException {
+    public Client(String name, String hostname, int port, String mainServer, int mainPort) throws IOException {
         this.name = name;
         this.mainServer = mainServer;
         this.mainPort = mainPort;
@@ -39,27 +40,53 @@ public class Client {
         this.port = port;
 
         server = new ServerSocket(port);
-        //out = new PrintWriter(server.getOutputStream(), true);
-        //in = new BufferedReader( new InputStreamReader(server.getInputStream()));
         stdIn = new BufferedReader(new InputStreamReader(System.in));
         this.getOtherProcesses();
     }
 
-    public void Run() throws IOException {
+    public void Run() throws IOException, InterruptedException {
         System.out.println("Client running...");
         String userInput;
-        while ((userInput = stdIn.readLine()) != null) {
-            out.println(userInput);
-            if (userInput.equals(".")) {
-                break;
+        OUTER:
+        while (true) {
+            //Send request messages to every process
+            for(Entry t: this.processes)
+            {
+                if(!t.getName().equals(this.name))
+                {
+                    Socket process = null;
+                    do
+                    {
+                        try
+                        {
+                            process = new Socket(t.getHost(),t.getPort());
+                        }
+                        catch (IOException e)
+                        {
+                             System.out.println("Client busy will try again.");
+                        }
+                    }while(process == null);
+                    out = new PrintWriter(process.getOutputStream(), true);
+                    in = new BufferedReader( new InputStreamReader(process.getInputStream()));
+                    out.println("Request access," + this.name + "," + this.number);
+                    String str;
+                    if(!(str = in.readLine()).equals("ok"))
+                    {
+                        process.wait();
+                    }
+                }
             }
-            else {
-                System.out.println("echo: " + in.readLine());
+            /**
+             * Got permission from every process to enter critical section
+             */
+            CRITICAL_SECTION:
+            {
+                System.out.println("Process " + this.name + ", with number: " + this.number + ", is in the critical section.");
             }
         }
-        if (server != null) {
-            server.close();
-        }
+    //    if (server != null) {
+    //        server.close();
+    //    }
     }
 
     /**
@@ -97,6 +124,8 @@ public class Client {
             String parts[] = str.split(",");
             processes.add(new Entry(parts[0], parts[1], Integer.parseInt(parts[2])));
         }
+        //get number
+        this.number = Integer.parseInt(input.readLine());
         output.println("quit");
 
         for (Entry t : this.processes) 

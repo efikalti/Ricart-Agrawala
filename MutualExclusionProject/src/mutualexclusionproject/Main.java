@@ -11,7 +11,7 @@ public class Main {
     private static final String mainServer = "localhost";
     private static final int mainPort = 10000;
     
-    public static void main(String []args) throws IOException
+    public static void main(String []args) throws IOException, InterruptedException
     {
         String message = "Wrong input.Correct usage of the program: java -jar MutualExclusion-1.0.jar <Server/Client> <name for Client> <hostname for Client> <port for Client>";
         if ((args.length < 1 && args[0].equals("Server")) || (args.length < 3 && args[0].equals("Client")))
@@ -22,8 +22,7 @@ public class Main {
         {
             switch (args[0]) {
                 case "Server":
-                    MainServer s = new MainServer (mainPort);
-                    s.run();
+                    MainServer.getInstance().Initialize(mainPort);
                     break;
                 case "Client":
                     String name = args[1];

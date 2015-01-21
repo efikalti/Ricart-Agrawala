@@ -16,14 +16,14 @@ public final class ServerWorker implements Runnable{
     private final Socket            clientSocket;
     private final PrintWriter       out;
     private final BufferedReader    in;
-    private final ArrayList<Entry>  HostTable;
+    private       ArrayList<Entry>  HostTable;
+    private       int               number;
     
-    public ServerWorker (Socket c, ArrayList<Entry> h) throws IOException
+    public ServerWorker (Socket c) throws IOException
     {
         this.clientSocket = c;
         out = new PrintWriter(clientSocket.getOutputStream(), true);
         in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-        this.HostTable = h;
     }
 
     @Override
@@ -58,13 +58,15 @@ public final class ServerWorker implements Runnable{
                         out.flush();
                         break;
                     case "send HostTable":
-                        System.out.println(this.HostTable.size());
+                        this.HostTable = MainServer.getInstance().getProcesses();
                         for (Entry t : this.HostTable)
                         {
                             out.println(t.toString());
                             out.flush();
                         }
                         out.println("ok");
+                        out.flush();
+                        out.println(MainServer.getInstance().getNumber());
                         break;
                 }
             }
@@ -81,7 +83,7 @@ public final class ServerWorker implements Runnable{
     
     private synchronized void register (String name, String hostname, int port)
     {
-        this.HostTable.add(new Entry(name, hostname, port));
+        MainServer.getInstance().register(new Entry(name,hostname,port));
     }
     
     public void print(String str)
