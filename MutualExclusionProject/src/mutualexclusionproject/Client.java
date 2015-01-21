@@ -11,7 +11,9 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
 /**
  *
@@ -57,6 +59,33 @@ public class Client {
                     Socket process = null;
                     do
                     {
+                        server.setSoTimeout(3000);
+                        try
+                        {
+                            this.client = server.accept();
+                        }
+                        catch (SocketTimeoutException e)
+                        {
+                            
+                        }
+                        if (this.client != null)
+                        {
+                            out = new PrintWriter(client.getOutputStream(), true);
+                            in = new BufferedReader( new InputStreamReader(client.getInputStream()));
+                            String str = in.readLine();
+                            String parts[] = str.split(",");
+                            if(this.number > Integer.parseInt(parts[2]))
+                            {
+                                out.println("ok");
+                            }
+                            else
+                            {
+                                out.println("nok");
+                            }
+                        }
+                        
+                        System.out.println("Finished listening...now will try to connect with the client again.");
+                        
                         try
                         {
                             process = new Socket(t.getHost(),t.getPort());
@@ -82,7 +111,17 @@ public class Client {
             CRITICAL_SECTION:
             {
                 System.out.println("Process " + this.name + ", with number: " + this.number + ", is in the critical section.");
+            
+                try 
+                {
+                    TimeUnit.SECONDS.sleep(2);
+                }
+                catch (InterruptedException e) {
+    //Handle exception
+}
             }
+            //update processed table
+            this.getOtherProcesses();
         }
     //    if (server != null) {
     //        server.close();

@@ -72,6 +72,7 @@ public final class ServerWorker implements Runnable{
             }
             for (Entry t : this.HostTable)
             {
+                System.out.println("HostTable: ");
                 System.out.println(t.toString());
             }
             
