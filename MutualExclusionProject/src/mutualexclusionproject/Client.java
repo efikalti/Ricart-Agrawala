@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package mutualexclusionproject;
 
 import java.io.BufferedReader;
@@ -117,15 +112,11 @@ public class Client {
                     TimeUnit.SECONDS.sleep(2);
                 }
                 catch (InterruptedException e) {
-    //Handle exception
-}
+                }
             }
             //update processed table
             this.getOtherProcesses();
         }
-    //    if (server != null) {
-    //        server.close();
-    //    }
     }
 
     /**

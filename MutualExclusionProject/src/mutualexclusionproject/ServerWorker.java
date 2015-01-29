@@ -17,7 +17,6 @@ public final class ServerWorker implements Runnable{
     private final PrintWriter       out;
     private final BufferedReader    in;
     private       ArrayList<Entry>  HostTable;
-    private       int               number;
     
     public ServerWorker (Socket c) throws IOException
     {
