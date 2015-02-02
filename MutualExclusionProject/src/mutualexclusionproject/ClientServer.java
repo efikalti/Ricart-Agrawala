@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import static mutualexclusionproject.Client.getNumber;
 
 /**
  *
@@ -13,7 +14,6 @@ public class ClientServer implements Runnable{
     
     private Socket                  clientSocket;
     private PrintWriter             out;
-    private int                     number;
     private final ServerSocket      server;
     
     public ClientServer (int port) throws IOException
@@ -29,7 +29,7 @@ public class ClientServer implements Runnable{
             {
                 clientSocket = server.accept();
                 out = new PrintWriter(clientSocket.getOutputStream(), true);
-                out.println(this.number);
+                out.println(getNumber());
                 out.flush();
             }
         }

@@ -6,7 +6,6 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
@@ -16,33 +15,33 @@ import java.util.concurrent.TimeUnit;
  */
 public class Client {
 
-    private final               ServerSocket server;
+    private                     ServerSocket server;
     private                     Socket client;
     private                     PrintWriter out;
     private                     BufferedReader in;
-    private final               BufferedReader stdIn;
+    private                     BufferedReader stdIn;
     private final               String name;
     private final               String hostname;
     private final int           port;
     private final String        mainServer;
     private final int           mainPort;
-    private int                 number;
+    private static int          number;
     private ArrayList<Entry>    processes = null;
 
-    public Client(String name, String hostname, int port, String mainServer, int mainPort) throws IOException {
+    public Client(String name, String hostname, int port, String mainServer, int mainPort) throws IOException 
+    {
         this.name = name;
         this.mainServer = mainServer;
         this.mainPort = mainPort;
         this.hostname = hostname;
         this.port = port;
 
-        server = new ServerSocket(port);
-        stdIn = new BufferedReader(new InputStreamReader(System.in));
         this.getOtherProcesses();
     }
 
     public void Run() throws IOException, InterruptedException {
         System.out.println("Client running...");
+        new Thread(new ClientServer(this.port)).start();
         String userInput;
         OUTER:
         while (true) {
@@ -51,9 +50,12 @@ public class Client {
             {
                 if(!t.getName().equals(this.name))
                 {
+                    
                     Socket process = null;
+                    
                     do
                     {
+                        /*
                         server.setSoTimeout(3000);
                         try
                         {
@@ -80,7 +82,7 @@ public class Client {
                         }
                         
                         System.out.println("Finished listening...now will try to connect with the client again.");
-                        
+                        */
                         try
                         {
                             process = new Socket(t.getHost(),t.getPort());
@@ -114,6 +116,7 @@ public class Client {
                 catch (InterruptedException e) {
                 }
             }
+            this.notifyAll();
             //update processed table
             this.getOtherProcesses();
         }
@@ -167,5 +170,10 @@ public class Client {
     public void print(String str) 
     {
         System.out.println("Main Server says: " + str);
+    }
+    
+    public static synchronized int getNumber()
+    {
+        return number;
     }
 }
