@@ -4,7 +4,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
-import static mutualexclusionproject.Client.getNumber;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  *
@@ -15,10 +16,12 @@ public class ClientServer implements Runnable{
     private Socket                  clientSocket;
     private PrintWriter             out;
     private final ServerSocket      server;
+    private final ExecutorService   threadPool;
     
     public ClientServer (int port) throws IOException
     {
         this.server = new ServerSocket(port);
+        this.threadPool = Executors.newFixedThreadPool(2);
     }
 
     @Override
@@ -28,19 +31,11 @@ public class ClientServer implements Runnable{
             while(true)
             {
                 clientSocket = server.accept();
-                out = new PrintWriter(clientSocket.getOutputStream(), true);
-                out.println(getNumber());
-                out.flush();
+                this.threadPool.execute(new ClientPort(clientSocket));
             }
-        }
-            
+        }  
         catch (IOException ex) {
             ex.printStackTrace();
         }
-    }
-    
-    public void print(String str)
-    {
-        System.out.println("Client says: " + str);
     }
 }

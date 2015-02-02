@@ -47,7 +47,7 @@ public class MainServer {
         System.out.println("Main Server running...");
         while(!isStopped)
         {
-            Socket clientSocket = null;
+            Socket clientSocket;
             try {
                 clientSocket = server.accept();
                 this.threadPool.execute(new ServerWorker(clientSocket));

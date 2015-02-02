@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
@@ -15,11 +14,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class Client {
 
-    private                     ServerSocket server;
-    private                     Socket client;
-    private                     PrintWriter out;
     private                     BufferedReader in;
-    private                     BufferedReader stdIn;
     private final               String name;
     private final               String hostname;
     private final int           port;
@@ -27,6 +22,7 @@ public class Client {
     private final int           mainPort;
     private static int          number;
     private ArrayList<Entry>    processes = null;
+    private Thread              server;
 
     public Client(String name, String hostname, int port, String mainServer, int mainPort) throws IOException 
     {
@@ -35,14 +31,17 @@ public class Client {
         this.mainPort = mainPort;
         this.hostname = hostname;
         this.port = port;
-
+        this.startServer();
         this.getOtherProcesses();
+    }
+    
+    public final void startServer() throws IOException
+    {
+        server = new Thread(new ClientServer(this.port));
+        server.start();
     }
 
     public void Run() throws IOException, InterruptedException {
-        System.out.println("Client running...");
-        new Thread(new ClientServer(this.port)).start();
-        String userInput;
         OUTER:
         while (true) {
             //Send request messages to every process
@@ -51,55 +50,24 @@ public class Client {
                 if(!t.getName().equals(this.name))
                 {
                     
-                    Socket process = null;
-                    
+                    Socket process;
+                    boolean check = false;
                     do
                     {
-                        /*
-                        server.setSoTimeout(3000);
-                        try
-                        {
-                            this.client = server.accept();
-                        }
-                        catch (SocketTimeoutException e)
-                        {
-                            
-                        }
-                        if (this.client != null)
-                        {
-                            out = new PrintWriter(client.getOutputStream(), true);
-                            in = new BufferedReader( new InputStreamReader(client.getInputStream()));
-                            String str = in.readLine();
-                            String parts[] = str.split(",");
-                            if(this.number > Integer.parseInt(parts[2]))
-                            {
-                                out.println("ok");
-                            }
-                            else
-                            {
-                                out.println("nok");
-                            }
-                        }
-                        
-                        System.out.println("Finished listening...now will try to connect with the client again.");
-                        */
                         try
                         {
                             process = new Socket(t.getHost(),t.getPort());
+                            in = new BufferedReader( new InputStreamReader(process.getInputStream()));
+                            String str = in.readLine();
+                            in.close();
+                            check = Integer.parseInt(str) > number;
                         }
                         catch (IOException e)
                         {
                              System.out.println("Client busy will try again.");
+                             check = false;
                         }
-                    }while(process == null);
-                    out = new PrintWriter(process.getOutputStream(), true);
-                    in = new BufferedReader( new InputStreamReader(process.getInputStream()));
-                    out.println("Request access," + this.name + "," + this.number);
-                    String str;
-                    if(!(str = in.readLine()).equals("ok"))
-                    {
-                        process.wait();
-                    }
+                    }while(!check);
                 }
             }
             /**
@@ -107,7 +75,7 @@ public class Client {
              */
             CRITICAL_SECTION:
             {
-                System.out.println("Process " + this.name + ", with number: " + this.number + ", is in the critical section.");
+                System.out.println("Process " + this.name + ", with number: " + number + ", is in the critical section.");
             
                 try 
                 {
@@ -115,8 +83,9 @@ public class Client {
                 }
                 catch (InterruptedException e) {
                 }
+                
+                System.out.println("Process " + this.name + ", with number: " + number + ", is leaving the critical section.");
             }
-            this.notifyAll();
             //update processed table
             this.getOtherProcesses();
         }
@@ -133,38 +102,35 @@ public class Client {
     {
         Socket connect = new Socket(mainServer, mainPort);
         String str;
-        PrintWriter output = new PrintWriter(connect.getOutputStream(), true);
-        BufferedReader input = new BufferedReader(new InputStreamReader(connect.getInputStream()));
+        PrintWriter out = new PrintWriter(connect.getOutputStream(), true);
+        in = new BufferedReader(new InputStreamReader(connect.getInputStream()));
         if (processes == null) 
         {
             do {
-                output.println("register");
-                output.flush();
-                output.println(this.name + "," + this.hostname + "," + this.port);
-                output.flush();
-                output.println("ok");
-                output.flush();
-                str = input.readLine();
+                out.println("register");
+                out.flush();
+                out.println(this.name + "," + this.hostname + "," + this.port);
+                out.flush();
+                out.println("ok");
+                out.flush();
+                str = in.readLine();
                 print(str);
             }
             while (str.equals("nok"));
         }
         //Get HostTable
-        output.println("send HostTable");
+        out.println("send HostTable");
         processes = new ArrayList<>();
-        while (!(str = input.readLine()).equals("ok"))
+        while (!(str = in.readLine()).equals("ok"))
         {
             String parts[] = str.split(",");
             processes.add(new Entry(parts[0], parts[1], Integer.parseInt(parts[2])));
         }
         //get number
-        this.number = Integer.parseInt(input.readLine());
-        output.println("quit");
-
-        for (Entry t : this.processes) 
-        {
-            System.out.println(t.toString());
-        }
+        this.number = Integer.parseInt(in.readLine());
+        out.println("quit");
+        out.close();
+        in.close();
     }
 
     public void print(String str) 

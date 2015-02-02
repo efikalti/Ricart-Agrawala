@@ -69,12 +69,13 @@ public final class ServerWorker implements Runnable{
                         break;
                 }
             }
+            out.close();
+            in.close();
+            System.out.println("HostTable: ");
             for (Entry t : this.HostTable)
             {
-                System.out.println("HostTable: ");
                 System.out.println(t.toString());
             }
-            
         }
         catch (IOException ex) {
             ex.printStackTrace();
