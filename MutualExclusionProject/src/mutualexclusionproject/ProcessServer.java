@@ -11,14 +11,14 @@ import java.util.concurrent.Executors;
  *
  * @author efi
  */
-public class ClientServer implements Runnable{
+public class ProcessServer implements Runnable{
     
     private Socket                  clientSocket;
     private PrintWriter             out;
     private final ServerSocket      server;
     private final ExecutorService   threadPool;
     
-    public ClientServer (int port) throws IOException
+    public ProcessServer (int port) throws IOException
     {
         this.server = new ServerSocket(port);
         this.threadPool = Executors.newFixedThreadPool(2);
@@ -31,7 +31,7 @@ public class ClientServer implements Runnable{
             while(true)
             {
                 clientSocket = server.accept();
-                this.threadPool.execute(new ClientPort(clientSocket));
+                this.threadPool.execute(new ProcessPort(clientSocket));
             }
         }  
         catch (IOException ex) {

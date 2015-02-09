@@ -50,7 +50,7 @@ public class MainServer {
             Socket clientSocket;
             try {
                 clientSocket = server.accept();
-                this.threadPool.execute(new ServerWorker(clientSocket));
+                this.threadPool.execute(new MainServerWorker(clientSocket));
             }
             catch (IOException ex) 
             {

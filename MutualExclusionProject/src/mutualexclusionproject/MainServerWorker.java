@@ -11,14 +11,14 @@ import java.util.ArrayList;
  *
  * @author efi
  */
-public final class ServerWorker implements Runnable{
+public final class MainServerWorker implements Runnable{
     
     private final Socket            clientSocket;
     private final PrintWriter       out;
     private final BufferedReader    in;
     private       ArrayList<Entry>  HostTable;
     
-    public ServerWorker (Socket c) throws IOException
+    public MainServerWorker (Socket c) throws IOException
     {
         this.clientSocket = c;
         out = new PrintWriter(clientSocket.getOutputStream(), true);

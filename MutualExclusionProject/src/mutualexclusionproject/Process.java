@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit;
  *
  * @author efi
  */
-public class Client {
+public class Process {
 
     private                     BufferedReader in;
     private final               String name;
@@ -24,7 +24,7 @@ public class Client {
     private ArrayList<Entry>    processes = null;
     private Thread              server;
 
-    public Client(String name, String hostname, int port, String mainServer, int mainPort) throws IOException 
+    public Process(String name, String hostname, int port, String mainServer, int mainPort) throws IOException 
     {
         this.name = name;
         this.mainServer = mainServer;
@@ -37,7 +37,7 @@ public class Client {
     
     public final void startServer() throws IOException
     {
-        server = new Thread(new ClientServer(this.port));
+        server = new Thread(new ProcessServer(this.port));
         server.start();
     }
 

@@ -1,18 +1,16 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package mutualexclusionproject;
 
 /**
- *
+ * Class for keeping the details of each process in the host table
  * @author efi
  */
 public class Entry {
     
+    //name of the process
     private final String name;
+    //host of the process
     private final String host;
+    //port of the process
     private final int port;
 
     public Entry(String name, String host, int port) {
