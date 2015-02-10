@@ -119,6 +119,19 @@ public class MainServer {
      */
     public synchronized void unregister (Entry e)
     {
-        this.HostTable.remove(e);
+        boolean found = false;
+        int i = 0;
+        while( i<this.HostTable.size() && !found )
+        {
+            if (e.equals(this.HostTable.get(i)))
+            {
+                found = true;
+                this.HostTable.remove(i);
+            }
+            else
+            {
+                i++;
+            }
+        }
     }
 }
