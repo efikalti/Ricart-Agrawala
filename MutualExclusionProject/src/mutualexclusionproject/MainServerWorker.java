@@ -85,17 +85,30 @@ public final class MainServerWorker implements Runnable{
                         out.flush();
                         out.println(MainServer.getInstance().getNumber());
                         break;
+                    case "unregister":
+                        inputLine = in.readLine();
+                        String parts[] = inputLine.split(",");
+                        if (parts.length == 3)
+                        {
+                            this.unregister(parts[0], parts[1], Integer.parseInt(parts[2]));
+                            out.println("ok");
+                        }
+                        else
+                        {
+                            out.println("nok");
+                        }
+                        break;
                 }
             }
             //close communication connections
             out.close();
             in.close();
             //print out host table for debugging reasons
-            System.out.println("HostTable: ");
-            for (Entry t : this.HostTable)
-            {
-                System.out.println(t.toString());
-            }
+          //  System.out.println("HostTable: ");
+          //  for (Entry t : this.HostTable)
+         //   {
+         //      System.out.println(t.toString());
+          //  }
         }
         catch (IOException ex) {
             ex.printStackTrace();
@@ -111,6 +124,17 @@ public final class MainServerWorker implements Runnable{
     private synchronized void register (String name, String hostname, int port)
     {
         MainServer.getInstance().register(new Entry(name,hostname,port));
+    }
+    
+    /**
+     * Call to the main server instance to unregister this process
+     * @param name
+     * @param hostname
+     * @param port 
+     */
+    private void unregister (String name, String hostname, int port)
+    {
+        MainServer.getInstance().unregister(new Entry(name,hostname,port));
     }
     
     /**

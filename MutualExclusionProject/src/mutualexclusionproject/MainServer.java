@@ -112,4 +112,13 @@ public class MainServer {
     {
         this.HostTable.add(e);
     }
+    
+    /**
+     * Remove the specified entry from the host table
+     * @param e 
+     */
+    public synchronized void unregister (Entry e)
+    {
+        this.HostTable.remove(e);
+    }
 }
